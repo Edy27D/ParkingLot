@@ -8,6 +8,7 @@ import org.parkinglot.parkinglot3.common.CarDto;
 import org.parkinglot.parkinglot3.ejb.CarsBean;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "Cars", value = "/Cars")
@@ -21,9 +22,24 @@ public class Cars extends HttpServlet {
         request.setAttribute("numberOfFreeParkingSpots", 10);
         request.getRequestDispatcher("/WEB-INF/pages/cars.jsp").forward(request,response);
     }
-
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse
-            response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String[] carIdsAsString = request.getParameterValues("car_ids");
+
+        if (carIdsAsString != null) {
+            List<Long> carIds = new ArrayList<>();
+
+            for (String idString : carIdsAsString) {
+                carIds.add(Long.parseLong(idString));
+            }
+
+            carsBean.deleteCarsByIds(carIds);
+        }
+
+        response.sendRedirect(request.getContextPath() + "/Cars");
     }
+
+
 }
